@@ -1,7 +1,6 @@
 
 # About the project
-It is really awesome to start new project and start to learn new things, I am motivated.
-I heard about this course from friend.
+
 
 *Write a short description about the course and add a link to your GitHub repository here. This is an R Markdown (.Rmd) file so you should use R Markdown syntax.*
 
@@ -11,5 +10,6 @@ I heard about this course from friend.
 date()
 
 ```
-The text continues here.
+It is really awesome to start new project and start to learn new things, I am motivated.
+I heard about this course from friend.
 
