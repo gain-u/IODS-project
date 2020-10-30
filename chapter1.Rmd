@@ -10,6 +10,7 @@
 date()
 
 ```
+## Some thoughts about the course since this far
 It is really awesome to start new project and start to learn new things, I am motivated.
 I heard about this course from friend.
 
