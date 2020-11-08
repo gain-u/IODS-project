@@ -1,13 +1,102 @@
-# Insert chapter 2 title here
+# Analysis of the students2014 data (after data wrangling)
 
-*Describe the work you have done this week and summarize your learning.*
+*Description of the work that have been done week# 45 and summarized learning.*
 
-- Describe your work and results clearly. 
+- Students2014 data has been prepared for analysis purposes.The aim of this excercise is to perform regression analysis and interpret the results.  
 - Assume the reader has an introductory course level understanding of writing and reading R code as well as statistical methods.
 - Assume the reader has no previous knowledge of your data or the more advanced methods you are using.
 
 ```{r}
 date()
+#Read the analysis dataset from data folder
+learning2014 <- read.csv("http://s3.amazonaws.com/assets.datacamp.com/production/course_2218/datasets/learning2014.txt", header = TRUE, sep =",")
+#check that the structure of the data is correct
+str(learning2014)
+head(learning2014)
 ```
 
-Here we go again...
+The dataset learning2014 origin is described in https://www.mv.helsinki.fi/home/kvehkala/JYTmooc/JYTOPKYS3-meta.txt. In brief it deals with international survey of Approaches to Learning, made possible
+by Teachers' Academy funding for KV in 2013-2015.  
+The graphical overview of the data and summaries of the variables in the data as follows:
+```{r}
+# Access the gglot2 library
+library(ggplot2)
+
+# initialize plot with data and aesthetic mapping
+p1 <- ggplot(learning2014, aes(x = attitude, y = points, col= gender))
+
+# define the visualization type (points)
+p2 <- p1 + geom_point()
+
+# add a regression line
+p3 <- p2 + geom_smooth(method = "lm")
+
+# add a main title and draw the plot
+p4 <- p3 + ggtitle("Student's attitude versus exam points")
+
+# draw the plot
+p4
+
+# summary method dispalys descriptive statistics for every variable in the dataset
+summary(learning2014)
+```
+Description and interpret of the outputs, as well as commenting on the distributions of the variables and the relationships between them  
+```{r}
+# draw a scatter plot matrix of the variables in learning2014.
+# [-1] excludes the first column (gender)
+#pairs(learning2014[-1], col = learning2014$gender)
+
+# access the GGally and ggplot2 libraries
+library(GGally)
+library(ggplot2)
+
+# create a more advanced plot matrix with ggpairs()
+p <- ggpairs(learning2014, mapping = aes(col = gender, alpha = 0.3), lower = list(combo = wrap("facethist", bins = 20)))
+
+# draw the plot
+p
+
+```
+  
+Correlation coefficients indicates the strength of the relationship between two different values. Indicator values that is greater than zero signifies a positive relationship between two variables, less than zero indicates a negative relationship between two variables.  According the results above three variables has been chosen as explanatory variables (attitude, stra and surf) and fitted to a regression model where exam points is the target (dependent) variable. Below is shown a summary of the fitted model and comments and interpretations of the results. Furthermore, explanations and interpretations of the statistical test related to the model parameters. (Given approach followed meaning of if an explanatory variable in your model does not have a statistically significant relationship with the target variable, remove the variable from the model and fit the model again without it).
+```{r}
+# create an plot matrix with ggpairs()
+ggpairs(learning2014, lower = list(combo = wrap("facethist", bins = 20)))
+
+# create a regression model with multiple explanatory variables
+my_model2 <- lm(points ~ attitude + stra + surf, data = learning2014)
+
+# print out a summary of the model
+summary(my_model2)
+```
+We can see in the summary of the fitted model it explains the relationship between the chosen explanatory variables (attitude , stra and surf) and the target variable (point).  
+Multiple linear regression is an extension of simple linear regression, that is to predict an outcome variable y (i.e., target variable) on the basis of multiple disticnt predictor variables x (i.e., attitude , stra and surf). The model is as follows:     
+  
+  y = α + β~1~x~1~ +  β~2~x~2~ +  β~3~x~3~ + ε
+
+There is summary of the residuals and then the coefficients, that gives estimates of the parameters of the model. Estimate of the intercept is the estimate of the α (alpha) parameter. The estimate of the attitude is the estimate of the β~1~ parameter, stra is the estimate of the β~2~ parameter and surf is the estimate of the β~3~ parameter. Further there is an estimate that 
+attitude variable has an effect on the point variable is value 3.3952 with a standard error value of 0,5741.  
+stra variable has an effect on the point variable is value 0.8531 with a standard error value of 0.5416.  
+surt variable has an effect on the point variable is value -0.5861 with a standard error value of 0.8014.  
+The t value and p value are the values of statistical test with a hypothesis that β values would be zero. The p-value of attitude is very low 3.156e-08, therefore we can conclude that there is statistical relationship between attitude and point variables 
+
+
+
+```{r}
+
+```
+Next the following diagnostic plots has been produced: Residuals vs Fitted values,  and Residuals vs Leverage. 
+```{r}
+# create a regression model with multiple explanatory variables
+my_model2 <- lm(points ~ attitude + stra, data = learning2014)
+
+# draw diagnostic plots using the plot() function. Choose the plots 1 and 5
+par(mfrow = c(2,2))
+plot(my_model2, which = c(1,5))
+```
+
+ Further the aim is to explain the assumptions of the model and interpret the validity of those assumptions based on the diagnostic plots as follows:  
+  Analyzing the residuals of the model provides a method to explore the validity of the model assumptions.   
+ *Residuals vs Fitted*.The constant variance assumption implies that the size of the errors should not depend on the explanatory variables.(Upper right plot shows random spread of the values) Assumption can be explored with a scatter of Residuals versus model predictions (Fitted values). This means that  any pattern in the scatter plot should be checked if such are found then that implies a problem with the assumptions (for example when fitted value increase then also the residuals value increases (that can not be observed from the plot in the right side) )  
+ *Residuals vs Leverage*. Leverage measures how much impact a single observation has on the model. The plot of residuals vs leverage can help to identify which observation have an unusually high impact. The meaning of that outlier value effect on how regression line is fitted on the data. In the plot on left side there is no high error values with an outlier.
+  
