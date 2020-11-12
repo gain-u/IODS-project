@@ -1,0 +1,60 @@
+## Student performance (incl. alcohol consumption)
+
+This is an exercise on data from two questionnaires related to student performance (especially including alcohol consumption). More information about the data sets  can be found in the link below.
+
+<https://archive.ics.uci.edu/ml/datasets/Student+Performance>
+
+The data have been adjusted as follow :  
+* The variables not used for joining the two data have been combined by averaging (including the grade variables)  
+* 'alc_use' is the average of 'Dalc' and 'Walc'  
+* 'high_use' is TRUE if 'alc_use' is higher than 2 and FALSE otherwise  
+
+The purpose of the analysis is to study the relationships between high/low alcohol consumption and some of the other variables in the data. To do this, 4 interesting variables have been chosen. The hypothesis for the chosen variables and  about their relationships with alcohol consumption are as follows:
+
+1.aaa  
+2.bbb  
+3.ccc  
+4.ddd  
+  
+  The distribution of chosen variables and relationships with alcohol consumption is explored with cross-tabulations, bar plot and box plots.  
+```{r}
+
+```
+  
+The findings of the exploration and the hypothesis seems...  
+
+The logistic regression is used explore the relationship between the chosen variables and the binary high/low alcohol consumption variable as the target variable. The summary of the fitted model is as follow:  
+```{r}
+
+```
+Further  the coefficients of the model as odds ratios and provide confidence intervals for them:  
+Interpretation of the results and comparison them to previously stated hypothesis.  
+
+The variables which, according to your logistic regression model, had a statistical relationship with high/low alcohol consumption, explore the predictive power of the model. Here is provided a 2x2 cross tabulation of predictions versus the actual values and  displayed a graphic visualizing both the actual values and the predictions.
+```{r}
+
+```
+
+The total proportion of inaccurately classified individuals (= the training error)  is computed and comments on all the results can be find here:
+
+Comparison of the performance of the model with performance achieved by some simple guessing strategy. 
+
+Further 10-fold cross-validation on the model.  
+```{r}
+
+```
+
+
+Does the model have better test set performance (smaller prediction error using 10-fold cross-validation) compared to the model introduced in DataCamp (which had about 0.26 error). Could you find such a model?  
+
+
+The cross-validation to compare the performance of different logistic regression models (= different sets of predictors). The task has been started with a very high number of predictors and explored the changes in the training and testing errors as went to models with less predictors.   
+```{r}
+
+```
+
+Drawed a graph to display the trends of both training and testing errors by the number of predictors in the model.   
+```{r}
+
+```
+
