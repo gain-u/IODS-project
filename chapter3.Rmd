@@ -124,11 +124,25 @@ The performance of the model is robust verifiable way to find high performance r
 
 Further 10-fold cross-validation on the model.  
 ```{r}
+# define a loss function (average prediction error)
+loss_func <- function(class, prob) {
+  n_wrong <- abs(class - prob) > 0.5
+  mean(n_wrong)
+}
 
+# compute the average number of wrong predictions in the (training) data
+loss_func(class = alc$high_use, prob = alc$probability)
+
+# K-fold cross-validation
+library(boot)
+cv <- cv.glm(data = alc, cost = loss_func, glmfit = m, K = 10)
+
+# average number of wrong predictions in the cross validation
+cv$delta[1]
 ```
 
 
-Does the model have better test set performance (smaller prediction error using 10-fold cross-validation) compared to the model introduced in DataCamp (which had about 0.26 error). Could you find such a model?  
+Does the model have better test set performance (smaller prediction error using 10-fold cross-validation) compared to the model introduced in DataCamp (which had about 0.26 error). It does not have better; Could you find such a model? No  
 
 
 The cross-validation to compare the performance of different logistic regression models (= different sets of predictors). The task has been started with a very high number of predictors and explored the changes in the training and testing errors as went to models with less predictors.   
