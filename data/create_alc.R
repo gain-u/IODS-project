@@ -85,3 +85,6 @@ alc <- mutate(alc, high_use = alc_use > 2)
 
 #glimpse the data, there should be new column hing_use
 glimpse(alc)
+
+#Save the analysis dataset to data folder
+write.csv(alc,"G:\\OpenDataScience\\Excercise 1\\IODS-project\\data\\alc.csv", row.names = FALSE)

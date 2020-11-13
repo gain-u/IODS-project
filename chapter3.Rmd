@@ -9,7 +9,9 @@ The data have been adjusted as follow :
 * 'alc_use' is the average of 'Dalc' and 'Walc'  
 * 'high_use' is TRUE if 'alc_use' is higher than 2 and FALSE otherwise  
 ```{r}
-
+#Read the analysis dataset from data folder
+alc <- read.csv("http://s3.amazonaws.com/assets.datacamp.com/production/course_2218/datasets/alc.txt", header = TRUE, sep =",")
+colnames(alc)
 ```
 
 
@@ -23,17 +25,48 @@ Variables 1-4 (listed below) with values hig, A, high and no will increase alcoh
   
   The distribution of chosen variables and relationships with alcohol consumption is explored with cross-tabulations, bar plot and box plots.  
 ```{r}
+# access the dplyr library
+library(dplyr)
 
+#check for chosen variables
+#alc_own <- select(alc, "goout","Pstatus","freetime","activities")
+#alc_own
+
+# access the 'tidyverse' packages dplyr and ggplot2
+library(dplyr); library(ggplot2)
+
+# initialize a plot of alcohol use
+g1 <- ggplot(data = alc, aes(x = alc_use, fill = goout))
+
+# define the plot as a bar plot and draw it
+#g1 + geom_bar()
+
+# initialize a plot of 'high_use'
+g2 <- ggplot(alc, aes(high_use))
+
+# draw a bar plot of high_use by sex
+g2 + facet_wrap("goout") + geom_bar()
+g2 + facet_wrap("Pstatus") + geom_bar()
+g2 + facet_wrap("freetime") + geom_bar()
+g2 + facet_wrap("activities") + geom_bar()
 ```
   
-The findings of the exploration and the hypothesis seems...  
+The findings of the exploration and the hypothesis seems, all of chosen variables shows in bar plots that hypothesis values are inverse (meaning that high use of alcohol is  more cases false than true). 
 
 The logistic regression is used explore the relationship between the chosen variables and the binary high/low alcohol consumption variable as the target variable. The summary of the fitted model is as follow:  
 ```{r}
+# find the model with glm()
+m <- glm(high_use ~ goout + Pstatus + freetime + activities, data = alc, family = "binomial")
 
+# print out a summary of the model
+summary(m)
+
+# print out the coefficients of the model
+coef(m)
 ```
 Further  the coefficients of the model as odds ratios and provide confidence intervals for them:  
-Interpretation of the results and comparison them to previously stated hypothesis.  
+Interpretation of the results and comparison them to previously stated hypothesis.
+goout has very low p value, therefore there is statistical relationship between alcohol high_use and goout variables
 
 The variables which, according to your logistic regression model, had a statistical relationship with high/low alcohol consumption, explore the predictive power of the model. Here is provided a 2x2 cross tabulation of predictions versus the actual values and  displayed a graphic visualizing both the actual values and the predictions.
 ```{r}
