@@ -1,4 +1,4 @@
-## Student performance (incl. alcohol consumption)
+# Student performance (incl. alcohol consumption)
 
 This is an exercise on data from two questionnaires related to student performance (especially including alcohol consumption). More information about the data sets  can be found in the link below.
 
@@ -63,19 +63,64 @@ summary(m)
 
 # print out the coefficients of the model
 coef(m)
+
+# compute odds ratios (OR)
+OR <- coef(m) %>% exp
+
+# compute confidence intervals (CI)
+CI <- confint(m) %>% exp
+
+# print out the odds ratios with their confidence intervals
+cbind(OR, CI)
 ```
 Further  the coefficients of the model as odds ratios and provide confidence intervals for them:  
 Interpretation of the results and comparison them to previously stated hypothesis.
-goout has very low p value, therefore there is statistical relationship between alcohol high_use and goout variables
+Only goout has very low p value, therefore there is statistical relationship between alcohol high_use and goout variables.It has odds ratio = 2,0635 and  confidence interval 2,5% 1,640; 97,5 2,632.
 
-The variables which, according to your logistic regression model, had a statistical relationship with high/low alcohol consumption, explore the predictive power of the model. Here is provided a 2x2 cross tabulation of predictions versus the actual values and  displayed a graphic visualizing both the actual values and the predictions.
+The variables which, according to logistic regression model, had a statistical relationship with high/low alcohol consumption, explore the predictive power of the model. Here is provided a 2x2 cross tabulation of predictions versus the actual values and  displayed a graphic visualizing both the actual values and the predictions.
 ```{r}
+# predict() the probability of high_use
+probabilities <- predict(m, type = "response")
 
+# add the predicted probabilities to 'alc'
+alc <- mutate(alc, probability = probabilities)
+
+# use the probabilities to make a prediction of high_use
+alc <- mutate(alc, prediction = probability > 0.5)
+
+# see the last ten original classes, predicted probabilities, and class predictions
+select(alc, goout, high_use, probability, prediction) %>% tail(10)
+
+# tabulate the target variable versus the predictions
+table(high_use = alc$high_use, prediction = alc$prediction)
+
+# access dplyr and ggplot2
+library(dplyr); library(ggplot2)
+
+# initialize a plot of 'high_use' versus 'probability' in 'alc'
+g <- ggplot(alc, aes(x = probability, y = high_use, col = prediction))
+
+# define the geom as points and draw the plot
+g + geom_point()
+
+# tabulate the target variable versus the predictions
+table(high_use = alc$high_use, prediction = alc$prediction) %>% prop.table %>% addmargins
 ```
 
-The total proportion of inaccurately classified individuals (= the training error)  is computed and comments on all the results can be find here:
+The total proportion of inaccurately classified individuals (= the training error)  is computed the results can be find here:
+```{r}
+# define a loss function (mean prediction error)
+loss_func <- function(class, prob) {
+  n_wrong <- abs(class - prob) > 0.5
+  mean(n_wrong)
+}
 
-Comparison of the performance of the model with performance achieved by some simple guessing strategy. 
+# call loss_func to compute the average number of wrong predictions in the (training) data
+loss_func(class = alc$high_use, prob = 0)
+```
+Smaller the number of loss function output is => better the prediction result.
+
+The performance of the model is robust verifiable way to find high performance result than achieved by some simple guessing strategy. 
 
 Further 10-fold cross-validation on the model.  
 ```{r}
