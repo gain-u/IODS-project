@@ -452,7 +452,7 @@ summary {
 <pre class="r"><code># This is a so-called &quot;R chunk&quot; where you can write R code.
 
 date()</code></pre>
-<pre><code>## [1] &quot;Fri Nov 13 11:39:43 2020&quot;</code></pre>
+<pre><code>## [1] &quot;Fri Nov 13 12:34:14 2020&quot;</code></pre>
 <div id="some-thoughts-about-the-course-since-this-far" class="section level2">
 <h2>Some thoughts about the course since this far</h2>
 <p>It is really awesome to start new project and start to learn new things, I am motivated.<br />
@@ -470,7 +470,7 @@ I heard about this course from friend.</p>
 <li>Assume the reader has no previous knowledge of your data or the more advanced methods you are using.</li>
 </ul>
 <pre class="r"><code>date()</code></pre>
-<pre><code>## [1] &quot;Fri Nov 13 11:39:43 2020&quot;</code></pre>
+<pre><code>## [1] &quot;Fri Nov 13 12:34:14 2020&quot;</code></pre>
 <pre class="r"><code>#Read the analysis dataset from data folder
 learning2014 &lt;- read.csv(&quot;http://s3.amazonaws.com/assets.datacamp.com/production/course_2218/datasets/learning2014.txt&quot;, header = TRUE, sep =&quot;,&quot;)
 #check that the structure of the data is correct
@@ -863,7 +863,7 @@ cv &lt;- cv.glm(data = alc, cost = loss_func, glmfit = m, K = 10)
 
 # average number of wrong predictions in the cross validation
 cv$delta[1]</code></pre>
-<pre><code>## [1] 0.2774869</code></pre>
+<pre><code>## [1] 0.2853403</code></pre>
 <p>Does the model have better test set performance (smaller prediction error using 10-fold cross-validation) compared to the model introduced in DataCamp (which had about 0.26 error). It does not have better; Could you find such a model? No</p>
 <p>The cross-validation to compare the performance of different logistic regression models (= different sets of predictors). The task has been started with a very high number of predictors and explored the changes in the training and testing errors as went to models with less predictors.</p>
 <p>Drawed a graph to display the trends of both training and testing errors by the number of predictors in the model.</p>
