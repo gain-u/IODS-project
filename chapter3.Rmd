@@ -10,11 +10,12 @@ The data have been adjusted as follow :
 * 'high_use' is TRUE if 'alc_use' is higher than 2 and FALSE otherwise  
 
 The purpose of the analysis is to study the relationships between high/low alcohol consumption and some of the other variables in the data. To do this, 4 interesting variables have been chosen. The hypothesis for the chosen variables and  about their relationships with alcohol consumption are as follows:
+Variables 1-4 (listed below) with values hig, A, high and no will increase alcohol consumption
 
-1.aaa  
-2.bbb  
-3.ccc  
-4.ddd  
+1.goout - going out with friends (numeric: from 1 - very low to 5 - very high):high  
+2.Pstatus - parent's cohabitation status (binary: 'T' - living together or 'A' - apart):A  
+3.freetime - free time after school (numeric: from 1 - very low to 5 - very high):high  
+4.activities - extra-curricular activities (binary: yes or no):no  
   
   The distribution of chosen variables and relationships with alcohol consumption is explored with cross-tabulations, bar plot and box plots.  
 ```{r}
