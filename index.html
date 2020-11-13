@@ -453,7 +453,7 @@ summary {
 <pre class="r"><code># This is a so-called &quot;R chunk&quot; where you can write R code.
 
 date()</code></pre>
-<pre><code>## [1] &quot;Fri Nov 13 00:28:11 2020&quot;</code></pre>
+<pre><code>## [1] &quot;Fri Nov 13 01:33:28 2020&quot;</code></pre>
 <div id="some-thoughts-about-the-course-since-this-far" class="section level2">
 <h2>Some thoughts about the course since this far</h2>
 <p>It is really awesome to start new project and start to learn new things, I am motivated.<br />
@@ -471,7 +471,7 @@ I heard about this course from friend.</p>
 <li>Assume the reader has no previous knowledge of your data or the more advanced methods you are using.</li>
 </ul>
 <pre class="r"><code>date()</code></pre>
-<pre><code>## [1] &quot;Fri Nov 13 00:28:11 2020&quot;</code></pre>
+<pre><code>## [1] &quot;Fri Nov 13 01:33:28 2020&quot;</code></pre>
 <pre class="r"><code>#Read the analysis dataset from data folder
 learning2014 &lt;- read.csv(&quot;http://s3.amazonaws.com/assets.datacamp.com/production/course_2218/datasets/learning2014.txt&quot;, header = TRUE, sep =&quot;,&quot;)
 #check that the structure of the data is correct
@@ -604,11 +604,11 @@ Analyzing the residuals of the model provides a method to explore the validity o
 * The variables not used for joining the two data have been combined by averaging (including the grade variables)<br />
 * ‘alc_use’ is the average of ‘Dalc’ and ‘Walc’<br />
 * ‘high_use’ is TRUE if ‘alc_use’ is higher than 2 and FALSE otherwise</p>
-<p>The purpose of the analysis is to study the relationships between high/low alcohol consumption and some of the other variables in the data. To do this, 4 interesting variables have been chosen. The hypothesis for the chosen variables and about their relationships with alcohol consumption are as follows:</p>
-<p>1.aaa<br />
-2.bbb<br />
-3.ccc<br />
-4.ddd</p>
+<p>The purpose of the analysis is to study the relationships between high/low alcohol consumption and some of the other variables in the data. To do this, 4 interesting variables have been chosen. The hypothesis for the chosen variables and about their relationships with alcohol consumption are as follows: Variables 1-4 (listed below) with values hig, A, high and no will increase alcohol consumption</p>
+<p>1.goout - going out with friends (numeric: from 1 - very low to 5 - very high):high<br />
+2.Pstatus - parent’s cohabitation status (binary: ‘T’ - living together or ‘A’ - apart):A<br />
+3.freetime - free time after school (numeric: from 1 - very low to 5 - very high):high<br />
+4.activities - extra-curricular activities (binary: yes or no):no</p>
 <p>The distribution of chosen variables and relationships with alcohol consumption is explored with cross-tabulations, bar plot and box plots.</p>
 <p>The findings of the exploration and the hypothesis seems…</p>
 <p>The logistic regression is used explore the relationship between the chosen variables and the binary high/low alcohol consumption variable as the target variable. The summary of the fitted model is as follow:</p>
