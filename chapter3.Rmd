@@ -25,8 +25,8 @@ Variables 1-4 (listed below) with values hig, A, high and no will increase alcoh
   
   The distribution of chosen variables and relationships with alcohol consumption is explored with cross-tabulations, bar plot and box plots.  
 ```{r}
-# access the dplyr library
-library(dplyr)
+# access the dplyr library and gglot2
+library(dplyr); library(ggplot2)
 
 #check for chosen variables
 #alc_own <- select(alc, "goout","Pstatus","freetime","activities")
@@ -49,8 +49,55 @@ g2 + facet_wrap("goout") + geom_bar()
 g2 + facet_wrap("Pstatus") + geom_bar()
 g2 + facet_wrap("freetime") + geom_bar()
 g2 + facet_wrap("activities") + geom_bar()
+
+# produce summary statistics by group
+alc %>% group_by(goout, high_use) %>% summarise(count = n(), mean_grade = mean(G3))
+
+alc %>% group_by(Pstatus, high_use) %>% summarise(count = n(), mean_grade = mean(G3))
+
+alc %>% group_by(freetime, high_use) %>% summarise(count = n(), mean_grade = mean(G3))
+
+alc %>% group_by(activities, high_use) %>% summarise(count = n(), mean_grade = mean(G3))
+
+
 ```
-  
+
+
+```{r}
+#box plots
+#go out
+# initialize a plot of high_use and G3
+g1 <- ggplot(alc, aes(x = high_use, y = G3, col = goout))
+
+# define the plot as a boxplot and draw it
+g1 + geom_boxplot() + ylab("grade") + ggtitle("Student Final grade by alcohol consumption and goout")
+
+
+#Pstatus
+# initialize a plot of high_use and G3
+g1 <- ggplot(alc, aes(x = high_use, y = G3, col = Pstatus))
+
+# define the plot as a boxplot and draw it
+g1 + geom_boxplot() + ylab("grade") + ggtitle("Student Final grade by alcohol consumption and Pstatus")
+
+
+#freetime
+# initialize a plot of high_use and G3
+g1 <- ggplot(alc, aes(x = high_use, y = G3, col = freetime))
+
+# define the plot as a boxplot and draw it
+g1 + geom_boxplot() + ylab("grade") + ggtitle("Student Final grade by alcohol consumption and freetime")
+
+#activities
+# initialize a plot of high_use and G3
+g1 <- ggplot(alc, aes(x = high_use, y = G3, col = activities))
+
+# define the plot as a boxplot and draw it
+g1 + geom_boxplot() + ylab("grade") + ggtitle("Student Final grade by alcohol consumption and activities")
+
+
+```
+
 The findings of the exploration and the hypothesis seems, all of chosen variables shows in bar plots that hypothesis values are inverse (meaning that high use of alcohol is  more cases false than true). 
 
 The logistic regression is used explore the relationship between the chosen variables and the binary high/low alcohol consumption variable as the target variable. The summary of the fitted model is as follow:  
