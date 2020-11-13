@@ -8,6 +8,10 @@ The data have been adjusted as follow :
 * The variables not used for joining the two data have been combined by averaging (including the grade variables)  
 * 'alc_use' is the average of 'Dalc' and 'Walc'  
 * 'high_use' is TRUE if 'alc_use' is higher than 2 and FALSE otherwise  
+```{r}
+
+```
+
 
 The purpose of the analysis is to study the relationships between high/low alcohol consumption and some of the other variables in the data. To do this, 4 interesting variables have been chosen. The hypothesis for the chosen variables and  about their relationships with alcohol consumption are as follows:
 Variables 1-4 (listed below) with values hig, A, high and no will increase alcohol consumption
