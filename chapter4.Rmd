@@ -29,7 +29,7 @@ boston_scaled <- scale(Boston)
 summary(boston_scaled)
 ```
 
-The variables change as mean value is zero, so min and 1st quantile is negative or near zero, in generally they are spread two sides of the zero value, earlier the valued were positive.
+The variables change as mean value is zero, so min and 1st quantile is negative or near zero, in generally they are spread two sides of the zero value, earlier before scaling, the values were positive.
 
 A categorical variable of the crime rate in the Boston dataset is created (from the scaled crime rate). The quantiles are used as the break points in the categorical variable.  The old crime rate variable is dropped from the dataset.
 ```{r}
@@ -80,7 +80,7 @@ correct_classes <- test$crime
 # remove the crime variable from test data
 test <- dplyr::select(test, -crime)
 ```
-## Linear discriminant analysis
+## Linear discriminant analysis (LDA) is a classification method
 The linear discriminant analysis is fitted on the train set. The categorical crime rate is used as the target variable and all the other variables in the dataset as predictor variables. See the LDA (bi)plot. 
 ```{r}
 # linear discriminant analysis
@@ -121,4 +121,47 @@ lda.pred <- predict(lda.fit, newdata = test)
 table(correct = correct_classes, predicted = lda.pred$class)
 ```
  
- The results for crimes in high categories seems to have good result, only one observation is categirised med_high. med_low and med_high categories has similar success, worst is low categorisation that is melanged with med_low
+ The results for crimes in high categories seems to have good result, only one observation is categorized med_high. med_low and med_high categories has similar success, worst is low categorization that has observations also in med_low
+ 
+ 
+## K-mean clustering
+
+K-mean algorithm is used to find the optimal number of clusters
+ 
+```{r}
+# load the data
+data("Boston")
+
+# center and standardize variables
+boston_scaled <- scale(Boston)
+
+# k-means clustering
+km <-kmeans(boston_scaled, centers = 1)
+
+# plot the Boston dataset with clusters
+pairs(boston_scaled, col = km$cluster)
+
+# k-means clustering
+km <-kmeans(boston_scaled, centers = 2)
+
+# plot the Boston dataset with clusters
+pairs(boston_scaled, col = km$cluster)
+
+
+# k-means clustering
+km <-kmeans(boston_scaled, centers = 3)
+
+# plot the Boston dataset with clusters
+pairs(boston_scaled, col = km$cluster)
+
+#elbow method
+mydata <- boston_scaled
+wss <- (nrow(mydata)-1)*sum(apply(mydata,2,var))
+  for (i in 2:15) wss[i] <- sum(kmeans(mydata,
+                                       centers=i)$withinss)
+plot(1:15, wss, type="b", xlab="Number of Clusters",
+     ylab="Within groups sum of squares")
+```
+ We can see from the visualization that when the number of klusters is 3 then the colors can be seen clearly (showing different clusters). There is also elbow method that can be used to find the optimal number of clusters.
+ 
+ 
