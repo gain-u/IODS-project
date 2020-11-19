@@ -1,5 +1,124 @@
-#Clustering and classification
+# Clustering and classification
 
+This is an exercise on data about Housing Values in Suburbs of Boston called (so called Boston (MASS))  More information about the data sets  can be found in the link below.
 
+https://stat.ethz.ch/R-manual/R-devel/library/MASS/html/Boston.html
 
+Here is the statistical description and summary of the data. Also description in which one variable in the same data row is matched with another variable's value, it is a view to the data, showing all variables paired with all the other variables
+```{r}
+# access the MASS package
+library(MASS)
 
+# load the data
+data("Boston")
+
+# explore the dataset
+str(Boston)
+summary(Boston)
+
+# plot matrix of the variables
+pairs(Boston)
+```
+The dataset is	standardized and here is a print out summaries of the scaled data. 
+
+```{r}
+# center and standardize variables
+boston_scaled <- scale(Boston)
+
+# summaries of the scaled variables
+summary(boston_scaled)
+```
+
+The variables change as mean value is zero, so min and 1st quantile is negative or near zero, in generally they are spread two sides of the zero value, earlier the valued were positive.
+
+A categorical variable of the crime rate in the Boston dataset is created (from the scaled crime rate). The quantiles are used as the break points in the categorical variable.  The old crime rate variable is dropped from the dataset.
+```{r}
+# class of the boston_scaled object
+class(boston_scaled)
+
+# change the object to data frame
+boston_scaled <- as.data.frame(boston_scaled)
+
+# summary of the scaled crime rate
+summary(boston_scaled$crim)
+
+# create a quantile vector of crim and print it
+bins <- quantile(boston_scaled$crim)
+bins
+
+# create a categorical variable 'crime'
+crime <- cut(boston_scaled$crim, breaks = bins, include.lowest = TRUE, labels = c("low", "med_low", "med_high", "high"))
+
+# look at the table of the new factor crime
+table(crime)
+
+# remove original crim from the dataset
+boston_scaled <- dplyr::select(boston_scaled, -crim)
+
+# add the new categorical value to scaled data
+boston_scaled <- data.frame(boston_scaled, crime)
+
+```
+
+The dataset is divided to train and test sets, so that 80% of the data belongs to the train set. 
+```{r}
+# number of rows in the Boston dataset 
+n <- nrow(boston_scaled)
+
+# choose randomly 80% of the rows
+ind <- sample(n,  size = n * 0.8)
+
+# create train set
+train <- boston_scaled[ind,]
+
+# create test set 
+test <- boston_scaled[-ind,]
+
+# save the correct classes from test data
+correct_classes <- test$crime
+
+# remove the crime variable from test data
+test <- dplyr::select(test, -crime)
+```
+## Linear discriminant analysis
+The linear discriminant analysis is fitted on the train set. The categorical crime rate is used as the target variable and all the other variables in the dataset as predictor variables. See the LDA (bi)plot. 
+```{r}
+# linear discriminant analysis
+lda.fit <- lda(crime ~ ., data = train)
+
+# print the lda.fit object
+lda.fit
+
+# the function for lda biplot arrows
+lda.arrows <- function(x, myscale = 1, arrow_heads = 0.1, color = "orange", tex = 0.75, choices = c(1,2)){
+  heads <- coef(x)
+  arrows(x0 = 0, y0 = 0, 
+         x1 = myscale * heads[,choices[1]], 
+         y1 = myscale * heads[,choices[2]], col=color, length = arrow_heads)
+  text(myscale * heads[,choices], labels = row.names(heads), 
+       cex = tex, col=color, pos=3)
+}
+
+# target classes as numeric
+classes <- as.numeric(train$crime)
+
+# plot the lda results
+plot(lda.fit, dimen = 2, col = classes, pch = classes)
+lda.arrows(lda.fit, myscale = 1)
+```
+ The crime categories from the test set are saved and removed from the test data set. Then the classes are predicted with the LDA model on the test data. see the cross tabulated results with the crime categories from the test set.
+```{r}
+# save the crime categories from test data
+test_classes <- test$crime
+
+# remove the crime variable from test data
+#test <- dplyr::select(test, -crime)
+
+# predict classes with test data
+lda.pred <- predict(lda.fit, newdata = test)
+
+# cross tabulate the results
+table(correct = correct_classes, predicted = lda.pred$class)
+```
+ 
+ The results for crimes in high categories seems to have good result, only one observation is categirised med_high. med_low and med_high categories has similar success, worst is low categorisation that is melanged with med_low
