@@ -1,0 +1,149 @@
+---
+title: "Human development and Gender inequality data exercise 5"
+author: "gain-u"
+date: "27 11 2020"
+output: html_document
+---
+# Human development and Gender inequality data exercise 5
+
+
+This is an exercise on data about Human development and Gender inequality, the human dataset originates from the United Nations Development Programme.  More information about the data sets  can be found in the link below.
+
+http://hdr.undp.org/en/content/human-development-index-hdi
+
+The graphical overview of the data and the summaries of the variables as follows:
+```{r}
+human <- read.table("http://s3.amazonaws.com/assets.datacamp.com/production/course_2218/datasets/human2.txt", sep=",", header=TRUE)
+
+# explore the dataset
+str(human)
+summary(human)
+
+
+
+# Access GGally
+library(GGally)
+library(dplyr)
+library(corrplot)
+
+colnames(human)
+
+# remove the Country variable
+#human_ <- select(human, -Country)
+
+# visualize the 'human_' variables
+ggpairs(human)
+
+# compute the correlation matrix and visualize it with corrplot
+cor(human) %>% corrplot
+
+```
+
+Describtion and interpretation of the outputs, the distribution of variables, appears to form dense clusters when the variables correlate with each other. For example, Expected years of schooling (Edu.Exp) and Life expectancy at birth (Life.Exp), Mat.mor and Life.Exp; Ado.Birth and Mat.Mor; 
+
+#Principal component analysis (PCA)
+
+First, PCA is applied on the not standardized human data
+```{r}
+summary(human)
+# perform principal component analysis (with the SVD method)
+pca_human <- prcomp(human)
+biplot(pca_human, choices = 1:2, cex = c(0.8, 1), col = c("grey40", "deeppink2"))
+```
+
+If and when the arrows are drawn to visualize the connections between the original variables and the PC's. The following connections hold:
+
+The angle between the arrows can be interpret as the correlation between the variables.
+The angle between a variable and a PC axis can be interpret as the correlation between the two.
+(Not in the case above because the variables are not standardized )The length of the arrows are proportional to the standard deviations of the variables
+
+```{r}
+
+# standardize the variables
+human_std <- scale(human)
+
+# print out summaries of the standardized variables
+summary(human_std)
+
+# perform principal component analysis (with the SVD method)
+pca_human <- prcomp(human_std)
+
+# draw a biplot of the principal component representation and the original variables
+biplot(pca_human, choices = 1:2, cex = c(0.8, 1), col = c("grey40", "deeppink2"))
+```
+
+  Above standardized variables shows clearly the arrows are drawn to visualize the connections between the original variables and the PC's. The following connections hold:
+
+The angle between the arrows can be interpret as the correlation between the variables.
+The angle between a variable and a PC axis can be interpret as the correlation between the two.
+The length of the arrows are proportional to the standard deviations of the variables
+Below scaled PCA analysis result:
+```{r}
+# create and print out a summary of pca_human
+s <- summary(pca_human)
+s
+
+# rounded percentages of variance captured by each PC
+pca_pr <- round(100*s$importance[2,], digits = 1) 
+
+# print out the percentages of variance
+pca_pr
+
+# create object pc_lab to be used as axis labels
+pc_lab <- paste0(names(pca_pr), " (", pca_pr, "%)")
+
+# draw a biplot
+biplot(pca_human, cex = c(0.8, 1), col = c("grey40", "deeppink2"), xlab = pc_lab[1], ylab = pc_lab[2])
+```
+  The two principal components Mat.Mor and Life.Exp the angle betweem those variables is largest.    
+  
+#Multiple Correspondence Analysis (MCA)  
+
+  MCA is a method to analyze qualitative data and it is an extension of Correspondence analysis (CA). MCA can be used to detect patterns or structure in the data as well as in dimension reduction (DataCamp).  
+The multiple correspondence analysis is done  for the tea dataset, that is  taken use from the Factominer package. 
+About tea dataset (Factominer):The data used here concern a questionnaire on tea. We asked to 300 individuals how they drink tea (18 questions), what are their product’s perception (12 questions) and some personal details (4
+questions).
+
+```{r}
+#Needed to comment out, otherwise diary html does not work
+library(FactoMineR) 
+library(ggplot2) 
+library(dplyr)
+library(tidyr)
+  
+#data("tea")
+
+#colnames(tea)
+
+# column names to keep in the data set
+#keep_columns <- c("Tea", "How", "how", "sugar", "where", "lunch")
+
+# select the 'keep_columns' to create a new data set
+#tea_time <- select(tea, one_of(keep_columns))
+
+
+# look at the summaries and structure of the data
+#summary(tea_time)
+#str(tea_time)
+
+# visualize the dataset
+#gather(tea_time) %>% ggplot(aes(value)) + facet_wrap("key", scales = "free") + #geom_bar() + theme(axis.text.x = element_text(angle = 45, hjust = 1, size = 8))
+
+
+```
+  MCA use frequencies, the summary MCA contains Eigenvalues, e.g., the variances and the percentage of variances retained by each dimension. Individuals contains the coordinates, the individuals contribution (%) on the dimension and the cos2 (the squered correlations) on the dimenssioins.
+Categories contains the coordinates of the variable categories, the contribution(%), the cos2(the squared correlations) and v.test value. The v.test follows normal distribution: if the value is below/above +-1,96, the coordinate is significantly different from zero.
+Categorical variables contains the squared cirrekatuib betweeb eacg variable and the dimensions. If the value is close to one it indicates a strong link with the variable and dimension.  
+
+The MCA analyze for tea data
+```{r}
+# multiple correspondence analysis
+#mca <- MCA(tea_time, graph = FALSE)
+
+# summary of the model
+#summary(mca)
+
+# visualize MCA
+#plot(mca, invisible=c("ind"), habillage = "quali")
+```
+

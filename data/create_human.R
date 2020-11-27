@@ -56,3 +56,6 @@ colnames(human)
 
 #Save the analysis dataset to data folder
 write.table(human,"G:\\OpenDataScience\\Excercise 1\\IODS-project\\data\\human.txt", sep=",")
+#write.table(human,"~/IODS-project/data/human.txt", sep=",") #tämä ei toimi sillä se osoittaa C-asemalle
+
+
