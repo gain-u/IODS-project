@@ -1,4 +1,10 @@
-#Analysis of longitudinal data
+---
+title: "Analysis of longitudinal data exercise 6"
+author: "gain-u"
+date: "4 12 2020"
+output: html_document
+---
+# Analysis of longitudinal data
 
 This is an exercise on data sets BPRS and RATS  
 BPRS data set is about 40 male subjects were randomly assigned to one of two treatment groups and each subject was rated on the brief psychiatric rating scale (BPRS) measured before treatment began (week 0) and then at weekly intervals for eight weeks. The BPRS assesses the level of 18 symptom constructs such as hostility, suspiciousness, hallucinations and grandiosity; each of these is rated from one (not present) to seven (extremely severe). The scale is used to evaluate patients suspected of having schizophrenia.
