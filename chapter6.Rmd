@@ -166,34 +166,136 @@ anova(fit)
 
 
 
-
-
-
-
-
-
-
-
-
+# Linear Mixed Effects
 
 
 ```{r}
 #read the data into memory
-BPRS <- read.table("https://raw.githubusercontent.com/KimmoVehkalahti/MABS/master/Examples/data/BPRS.txt", sep  =" ", header = T)
+BPRS <- read.table("https://raw.githubusercontent.com/KimmoVehkalahti/MABS/master/Examples/data/BPRS.txt", sep = " ", header = T)
 
 # Factor treatment & subject
 BPRS$treatment <- factor(BPRS$treatment)
 BPRS$subject <- factor(BPRS$subject)
 
-# Convert to long form
-BPRSL <-  BPRS %>% gather(key = weeks, value = bprs, -treatment, -subject)
 
-# Extract the week number
-BPRSL <-  BPRSL %>% mutate(week = as.integer(substr(weeks,5,5)))
+# Glimpse the data
+glimpse(BPRS)
 
-# Take a glimpse at the BPRSL data
+# Convert data to long form
+BPRSL <- BPRS %>%
+  gather(key = weeks, value = bprs, -treatment, -subject) %>%
+  mutate(week = as.integer(substr(weeks,5,6))) 
+
+# Glimpse the data
 glimpse(BPRSL)
+
+ 
+
+
+
+
+
+
+
+
 ```
+explain
+```{r}
+# Check the dimensions of the data
+dim(BPRSL)
+
+
+
+# Plot the RATSL data
+ggplot(BPRSL, aes(x = week, y = bprs, group = subject)) +
+  geom_line(aes(linetype = subject)) +
+  scale_x_continuous(name = "Week", breaks = seq(0, 60, 8)) +
+  scale_y_continuous(name = "bprs") +
+  theme(legend.position = "top")
+
+```
+
+
+We ignore the repeatead measures structure of data, and we fit a multiple linear regression model with bprs as response and week and subject as explanatory variables
+```{r}
+# create a regression model RATS_reg
+BPRS_reg <- lm(bprs ~ week + subject, data = BPRSL)
+
+# print out a summary of the model
+summary(BPRS_reg)
+
+#
+```
+Next we do random intercept Model. First we fit the ramdom interceip model for same two explanatory variables : week and subject. Fitting a random intercept model allows the linear regression fit for each subject to differ in intercept from other subjects. Here is used lme4 package that offers tools for fitting linear and generalised linear mixed-effects models.
+
+```{r}
+# access library lme4
+library(lme4)
+library(ggplot2)
+
+
+
+# Create a random intercept model
+BPRS_ref <- lmer(bprs ~ week + subject + (1 | treatment), data = BPRSL, REML = FALSE)
+
+# Print the summary of the model
+summary(BPRS_ref)
+
+```
+Now we fit the random intercept and random slope model to the BPRS -data. Fitting a random intercept  and random slope model allows the linear regression fits for each individual to differ in intercept but also in slope. This way it is possible to account for the individual differences in the treatments but also the effect of time.
+
+
+```{r}
+# create a random intercept and random slope model
+BPRS_ref1 <- lmer(bprs ~ week + subject + (week | treatment), data = BPRSL, REML = FALSE)
+
+
+# print a summary of the model
+summary(BPRS_ref1)
+
+# perform an ANOVA test on the two models
+anova(BPRS_ref1, BPRS_ref)
+```
+
+  Analyse of the result underpins to the  attention to the chi-squared statistics and p-value of the likelihood ratio test between BPRS_ref1 and BPRS_ref. The lower the value the better the fit against the comparison model. According the rule a random intercept and random slope model seems to give better result.
+
+Now we can fit a random intercept and slope model that allows for a group x time interaction.
+
+
+
+```{r}
+# create a random intercept and random slope model
+BPRS_ref2 <- lmer(bprs ~ week * subject + (week | treatment), data = BPRSL, REML = FALSE)
+
+# print a summary of the model
+summary(BPRS_ref2)
+
+# perform an ANOVA test on the two models
+anova(BPRS_ref2, BPRS_ref1)
+
+# draw the plot of BPRSL
+ggplot(BPRSL, aes(x = week, y = bprs, group = subject)) +
+  geom_line(aes(linetype = subject)) +
+  scale_x_continuous(name = "week", breaks = seq(0, 60, 20)) +
+  scale_y_continuous(name = "Observed bprs ") +
+  theme(legend.position = "top")
+
+# Create a vector of the fitted values
+Fitted <- fitted(BPRS_ref2)
+
+# Create a new column fitted to BPRSL
+BPRSL <- BPRSL %>%
+  mutate(Fitted)
+
+# draw the plot of BPRSL
+ggplot(BPRSL, aes(x = week, y = Fitted, group = subject)) +
+  geom_line(aes(linetype = subject)) +
+  scale_x_continuous(name = "week", breaks = seq(0, 60, 20)) +
+  scale_y_continuous(name = "Fitted bprs ") +
+  theme(legend.position = "top")
+```
+
+ 
 
 
 

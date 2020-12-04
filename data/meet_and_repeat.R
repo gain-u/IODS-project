@@ -188,7 +188,9 @@ summary(RATS_ref1)
 
 # perform an ANOVA test on the two models
 anova(RATS_ref1, RATS_ref)
+
 #
+
 # create a random intercept and random slope model
 RATS_ref2 <- lmer(Weight ~ Time * Group + (Time | ID), data = RATSL, REML = FALSE)
 
@@ -218,3 +220,4 @@ ggplot(RATSL, aes(x = Time, y = Fitted, group = ID)) +
   scale_x_continuous(name = "Time (days)", breaks = seq(0, 60, 20)) +
   scale_y_continuous(name = "Fitted weight (grams)") +
   theme(legend.position = "top")
+#
