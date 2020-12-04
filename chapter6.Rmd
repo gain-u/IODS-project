@@ -1,0 +1,193 @@
+#Analysis of longitudinal data
+
+This is an exercise on data sets BPRS and RATS  
+BPRS data set is about 40 male subjects were randomly assigned to one of two treatment groups and each subject was rated on the brief psychiatric rating scale (BPRS) measured before treatment began (week 0) and then at weekly intervals for eight weeks. The BPRS assesses the level of 18 symptom constructs such as hostility, suspiciousness, hallucinations and grandiosity; each of these is rated from one (not present) to seven (extremely severe). The scale is used to evaluate patients suspected of having schizophrenia.
+Data source is available: https://raw.githubusercontent.com/KimmoVehkalahti/MABS/master/Examples/data/BPRS.txt  
+
+RATS data set is about a nutrition study conducted in three groups of rats. The groups were put on different diets, and each animal’s body weight (grams) was recorded repeatedly (approximately) weekly, except in week seven when two recordings were taken) over a 9-week period. The question of most interest is whether the growth profiles of the three groups differ.
+Data source is available: https://raw.githubusercontent.com/KimmoVehkalahti/MABS/master/Examples/data/rats.txt
+
+Prior to the exercise the data have been wrangled, meaning of when working with longitudinal or repeated measures data, that is, converting the data between the wide form and the long form (see. meet_and_repeat.R in data folder).  
+
+First we use 
+
+```{r}
+RARTS <- read.table("https://raw.githubusercontent.com/KimmoVehkalahti/MABS/master/Examples/data/rats.txt", sep  =" ", header = T)
+#Look at the dimensions of the data
+names(RARTS)
+
+#Look at the structure of the data
+str(RARTS)
+
+#Print the data set summary to helps to understand 
+summary(RARTS)
+```
+We need to convert the categorical variables of both data sets to factors, (Here we see the data difference between wide and long form 1st wide and then long )  
+```{r}
+# Access the packages dplyr and tidyr
+library(dplyr)
+library(tidyr)
+
+RATS <- read.table("https://raw.githubusercontent.com/KimmoVehkalahti/MABS/master/Examples/data/rats.txt", sep  ="\t", header = T)
+
+# Factor treatment & subject
+RATS$ID <- factor(RATS$ID)
+RATS$Group <- factor(RATS$Group)
+
+# Glimpse the data
+glimpse(RATS)
+
+# Convert data to long form
+RATSL <- RATS %>%
+  gather(key = WD, value = Weight, -ID, -Group) %>%
+  mutate(Time = as.integer(substr(WD,3,4))) 
+
+# Glimpse the data
+glimpse(RATSL)
+
+```
+  
+  
+We shall plot the RATS values differentiating between the diets groups into which the rats have been randomized. A simple graph makes features of the data apparent
+```{r}
+str(RATS)
+#Access the package ggplot2
+library(ggplot2)
+
+# Draw the plot
+ggplot(RATSL, aes(x = Time, y = Weight, linetype = ID)) +
+  geom_line() +
+  scale_linetype_manual(values = rep(1:10, times=4)) +
+  facet_grid(. ~ Group, labeller = label_both) +
+  theme(legend.position = "none") + 
+  scale_y_continuous(limits = c(min(RATSL$Weight), max(RATSL$Weight)))
+```
+
+
+  Rats in group 1 seems to have the weights <300, group 2 >400 as well as group 3 > 450 have some overlapping values, but in the group 2 the rats have get more weight faster than in the two other groups.
+  Next we use the tracking (the tracking is more obvious in a plot of the standardized values of each observation).
+```{r}
+# Standardise the variable ratsl
+RATSL_ <- RATSL %>%
+  group_by(Group, Time) %>%
+  mutate(stdrats = (Weight - mean(Weight))/sd(Weight) ) %>%
+  ungroup()
+
+# Glimpse the data
+glimpse(RATSL_)
+
+# Plot again with the standardised ratsl_
+ggplot(RATSL_, aes(x = Time, y = Weight, linetype = ID)) +
+  geom_line() +
+  scale_linetype_manual(values = rep(1:10, times=4)) +
+  facet_grid(. ~ Group, labeller = label_both) +
+  scale_y_continuous(name = "standardized ratsl_")
+```
+  
+  Next we look at the variation of the observations at each time point, therefore we create the mean and standard error of the variable  
+```{r}
+# Number of weeks, baseline (week 0) included
+n <- RATSL_$Time %>% unique() %>% length()
+
+# Summary data with mean and standard error of ratsl_ by Group and Time 
+RATSS <- RATSL_ %>%
+  group_by(Group, Time) %>%
+  summarise( mean = mean(Weight), se = sd(Weight)/sqrt(n) ) %>%
+  ungroup()
+
+# Glimpse the data
+glimpse(RATSS)
+
+# Plot the mean profiles
+ggplot(RATSS, aes(x = Time, y = mean, linetype = Group, shape = Group)) +
+  geom_line() +
+  scale_linetype_manual(values = c(1,2,4)) +
+  geom_point(size=3) +
+  scale_shape_manual(values = c(1,2,4)) +
+  geom_errorbar(aes(ymin = mean - se, ymax = mean + se, linetype="1"), width=0.3) +
+  theme(legend.position = c(0.8,0.8)) +
+  scale_y_continuous(name = "mean(Weight) +/- se(Weight)")
+```
+  
+
+
+Group 2 seems to have more variance than the other groups.  
+Next we use summary measure approach, the mean of time is out summary measure. Therefore we fist calculate this measure and then look at boxplots of the measure for each Group. Boxplot can reveal outlier(s)
+```{r}
+# Create a summary data by treatment and subject with mean as the summary variable (ignoring baseline ).
+RATSL8S <- RATSL %>%
+  filter(Time > 0) %>%
+  group_by(Group, ID) %>%
+  summarise( mean=mean(Weight) ) %>%
+  ungroup()
+
+# Glimpse the data
+glimpse(RATSL8S)
+
+# Draw a boxplot of the mean versus treatment
+ggplot(RATSL8S, aes(x = Group, y = mean)) +
+  geom_boxplot() +
+  stat_summary(fun.y = "mean", geom = "point", shape=23, size=4, fill = "white") +
+  scale_y_continuous(name = "mean(Weights), weeks 1-9")
+```
+ 
+
+```{r}
+#RATS8S1 <- RATSL8S %>% filter( (mean > 240 & Group == 1) | (mean < 480 & Group == 2) | (mean > 500 & Group == 3) )
+#glimpse(RATS8S1)
+```
+
+
+The formal test for a defference is performed with a t-test to assess any difference between the groups and also calculate a confidence interval for this differences.
+```{r}
+# Create a new data by filtering the outlier and adjust the ggplot code the draw the plot again with the new data
+RATSL8S1 <- RATSL8S %>%
+  filter(mean < 480)
+
+# Perform a two-sample t-test
+t.test(mean~Group, data = RATSL8S1, var.equal = TRUE)
+
+# Add the baseline from the original data as a new variable to the summary data
+RATSL8S2 <- RATSL8S %>%
+  mutate(baseline = RATS$WD1)
+
+# Fit the linear model with the mean as the response 
+fit <- lm(mean ~ baseline + Group, data = RATSL8S2)
+
+# Compute the analysis of variance table for the fitted model with anova()
+anova(fit)
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+```{r}
+#read the data into memory
+BPRS <- read.table("https://raw.githubusercontent.com/KimmoVehkalahti/MABS/master/Examples/data/BPRS.txt", sep  =" ", header = T)
+
+# Factor treatment & subject
+BPRS$treatment <- factor(BPRS$treatment)
+BPRS$subject <- factor(BPRS$subject)
+
+# Convert to long form
+BPRSL <-  BPRS %>% gather(key = weeks, value = bprs, -treatment, -subject)
+
+# Extract the week number
+BPRSL <-  BPRSL %>% mutate(week = as.integer(substr(weeks,5,5)))
+
+# Take a glimpse at the BPRSL data
+glimpse(BPRSL)
+```
+
+
+
